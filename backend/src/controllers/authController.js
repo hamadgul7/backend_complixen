@@ -84,6 +84,7 @@ exports.register = async (req, res) => {
         frameworkQuery[`frameworks.${key}`] = true;
       }
     }
+    console.log('helooooo', user._id)
 
     const matchingControls = await Control.find(frameworkQuery);
 
@@ -98,9 +99,11 @@ exports.register = async (req, res) => {
             frameworks: ctrl.frameworks,
             frameworkRefs: ctrl.frameworkRefs
         },
+        user: user._id,
         company: null,
         owner: null,
         policyApprover: null,
+        approver: null,
         requiredApprovalStage: 'Draft',
         isReady: false,
         scope: 'In Scope',

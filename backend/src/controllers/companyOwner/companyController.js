@@ -47,7 +47,7 @@ async function addCompanyDetails(req, res) {
 
         // 🔽 Append this block to update CompanyControl entries
         await CompanyControl.updateMany(
-            { owner: userId },
+            { user: userId },
             { $set: { company: savedCompany._id } }
         );
 

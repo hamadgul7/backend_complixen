@@ -12,6 +12,7 @@ const controlCodeRoutes = require('./routes/controlCode-routes');
 //Company
 const companyRoutes = require('./routes/companyOwner/companyRoutes');
 const companyControlRoutes = require('./routes/companyOwner/companyControl-routes');
+const companyEvidenceRoutes = require('./routes/companyOwner/companyEvidence-routes');
 
 //Admin
 const adminManageCompanyRoutes = require('./routes/administration/manageCompany-routes');
@@ -36,6 +37,7 @@ app.use('/api/controlCode', controlCodeRoutes);
 //Company Owner
 app.use('/api/company', companyRoutes);
 app.use('/api/company/control', companyControlRoutes);
+app.use('/api/company/evidence', companyEvidenceRoutes);
 
 //Admin
 app.use('/api/admin/company', adminManageCompanyRoutes);

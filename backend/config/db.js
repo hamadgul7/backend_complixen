@@ -4,6 +4,7 @@ require('dotenv').config();
 const connectDB = async () => {
     try {
         const MONGO_URI = process.env.MONGO_URI;
+        console.log('MONGO_URI:', MONGO_URI.replace(/:[^@]+@/, ':****@'));
         const conn = await mongoose.connect(MONGO_URI);
         console.log(`✅ MongoDB connected: ${conn.connection.host}`);
     } catch (error) {

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const evidenceSchema = new mongoose.Schema(
     {
-        type: { type: String, enum: ['document', 'screenshot', 'log', 'note'], required: true },
+        // type: { type: String, enum: ['document', 'screenshot', 'log', 'note'], required: true },
         description: String,
         fileUrl: String, 
         uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

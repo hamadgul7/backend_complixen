@@ -34,8 +34,9 @@ async function addControl(req, res){
 
 async function viewAllControls(req, res){
     try {
+        console.log('Viewing all controls');
     const controls = await Control.find()
-      .populate('frameworkRefs', 'name description')                          
+      .populate('frameworkRefs', 'name')                          
     res.status(200).json(controls);
     } catch (err) {
         res.status(500).json({ error: err.message });

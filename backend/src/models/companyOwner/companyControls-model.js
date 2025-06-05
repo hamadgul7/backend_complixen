@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const companyControlSchema = new mongoose.Schema(
-    {
+    {   
+        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company'},
         controlTemplate: {
             _id: mongoose.Schema.Types.ObjectId,
@@ -17,6 +18,7 @@ const companyControlSchema = new mongoose.Schema(
             frameworkRefs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ComplianceFramework' }]
         },
         owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        approver: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },    // little confusion because of policyApprover
         // policyApprover: { type: mongoose.Schema.Types.ObjectId, ref: 'Policy' }, ya add karna hai temporary testing kelie commented hai
         requiredApprovalStage: {
             type: String,
