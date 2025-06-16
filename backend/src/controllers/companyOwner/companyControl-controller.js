@@ -18,6 +18,21 @@ async function getCompanyControlsById(req, res){
     }
 }
 
+async function getCompanyControlById(req, res){
+    try {
+        const id = req.params.id;
+        const control = await CompanyControl.findById(id)
+        // .populate('company')
+        .populate('controlTemplate.frameworkRefs', 'name')
+        .populate('owner', 'username')
+        // .populate('policyApprover')
+        // .populate('evidence');
+        res.status(200).json(control);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }   
+}
+
 async function updateCompanyControl(req, res){
     try {
         const id = req.params.id;
@@ -78,6 +93,7 @@ async function assignOwnerToControl(req, res){
 
 module.exports = {
     getCompanyControlsById: getCompanyControlsById,
+    getCompanyControlById: getCompanyControlById,
     updateCompanyControl: updateCompanyControl,
     assignOwnerToControl: assignOwnerToControl
 }
