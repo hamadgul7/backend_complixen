@@ -6,5 +6,6 @@ const companyControlsController = require('../../controllers/companyOwner/compan
 
 router.get('/getCompanyControlsById/:id', companyControlsController.getCompanyControlsById);
 router.post('/updateCompanyControl/:id', companyControlsController.updateCompanyControl);
+router.post('/assignOwnerToControl', companyControlsController.assignOwnerToControl);
 
 module.exports = router;

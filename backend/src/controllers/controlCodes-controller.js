@@ -1,6 +1,7 @@
 const ControlCode = require('../models/controlCodes-model');
 const Control = require('../models/Administration/adminControls-model');
 const { get } = require('mongoose');
+const Company = require('../models/companyOwner/companyDetails-model'); 
 
 async function addControlCode(req, res) {
     try {
@@ -20,26 +21,44 @@ async function addControlCode(req, res) {
 
 async function getControlCodes(req, res) {
    try {
-        const { framework, controlCode } = req.query;
+    const { companyId, controlCode } = req.query;
 
-        const filter = {};
+    if (!companyId) {
+        return res.status(400).json({ error: 'companyId is required' });
+    }
 
-        if (framework) {
+    // Get company and populate frameworks
+    const company = await Company.findById(companyId).populate({
+        path: 'frameworks',
+        select: 'name'
+    });
+
+    if (!company) {
+        return res.status(404).json({ error: 'Company not found' });
+    }
+
+    const filter = {};
+
+    // Use framework names from the company
+    const framework = company.frameworks.map(f => f.name);
+
+    if (framework) {
         const frameworkArray = Array.isArray(framework)
-            ? framework.map(f => f.trim())
-            : framework.split(',').map(f => f.trim());
+        ? framework.map(f => f.trim())
+        : framework.split(',').map(f => f.trim());
 
         filter.framework = { $in: frameworkArray };
-        }
+    }
 
-        if (controlCode) {
+    if (controlCode) {
         filter.relatedControls = controlCode;
-        }
-        console.log("MongoDB filter:", JSON.stringify(filter, null, 2));
+    }
 
+    console.log("MongoDB filter:", JSON.stringify(filter, null, 2));
 
-        const controlCodes = await ControlCode.find(filter);
-        res.status(200).json(controlCodes);
+    const controlCodes = await ControlCode.find(filter);
+    console.log("Control codes:", controlCodes);   
+    res.status(200).json(controlCodes);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

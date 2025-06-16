@@ -54,7 +54,7 @@ exports.register = async (req, res) => {
 
     await user.save();
 
-    const url = `http://172.104.48.135:5000/api/auth/verify-email?token=${verificationToken}`;
+    const url = `http://localhost:5000/api/auth/verify-email?token=${verificationToken}`;
     console.log("Verification URL:", url);
 
     try {

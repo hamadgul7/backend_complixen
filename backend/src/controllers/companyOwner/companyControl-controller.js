@@ -61,7 +61,23 @@ async function updateCompanyControl(req, res){
 
 }
 
+async function assignOwnerToControl(req, res){
+    try {
+        const { id, owner } = req.body;
+        const existingControl = await CompanyControl.findById(id);
+        if (!existingControl) {
+            return res.status(404).json({ error: 'CompanyControl not found' });
+        }
+        existingControl.owner = owner;
+        const updatedControl = await existingControl.save();
+        res.status(200).json(updatedControl);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
 module.exports = {
     getCompanyControlsById: getCompanyControlsById,
-    updateCompanyControl: updateCompanyControl
+    updateCompanyControl: updateCompanyControl,
+    assignOwnerToControl: assignOwnerToControl
 }

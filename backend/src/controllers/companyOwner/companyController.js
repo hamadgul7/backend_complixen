@@ -55,8 +55,8 @@ async function addCompanyDetails(req, res) {
             userId,
             { $set: { company: savedCompany._id } }
         );
-
-        const controlsToUpdate = await CompanyControl.find({ owner: userId });
+        
+        const controlsToUpdate = await CompanyControl.find({ user: userId });
         for (const control of controlsToUpdate) {
             if (control.controlTemplate?.description?.includes('<CompanyName>')) {
                 control.controlTemplate.description = control.controlTemplate.description.replace(
