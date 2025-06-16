@@ -44,7 +44,7 @@ app.use('/api/admin/company', adminManageCompanyRoutes);
 app.use('/api/admin/control', adminManageControlRoutes);
 app.use('/api/admin/complianceFramework', adminManageComplianceFrameworkRoutes);
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     connectDB();
     console.log(`🌍 Server is running on port ${PORT}`);
 });
