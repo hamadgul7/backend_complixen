@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+
 
 const connectDB = async () => {
     try {
-        const MONGO_URI = process.env.MONGO_URI;1
+        const MONGO_URI = process.env.MONGO_URI;
         const conn = await mongoose.connect(MONGO_URI);
         console.log(`✅ MongoDB connected: ${conn.connection.host}`);
     } catch (error) {

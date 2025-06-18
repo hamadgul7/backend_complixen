@@ -21,16 +21,19 @@ async function getCompanyControlsById(req, res){
 async function getCompanyControlById(req, res){
     try {
         const id = req.params.id;
-        const control = await CompanyControl.findById(id)
-        // .populate('company')
-        .populate('controlTemplate.frameworkRefs', 'name')
-        .populate('owner', 'username')
-        // .populate('policyApprover')
-        // .populate('evidence');
+
+        const control = await CompanyControl.findOne({ 'controlTemplate._id': id })
+            .populate('controlTemplate.frameworkRefs', 'name')
+            .populate('owner', 'username');
+
+        if (!control) {
+            return res.status(404).json({ error: 'Control not found' });
+        }
+
         res.status(200).json(control);
     } catch (error) {
         res.status(500).json({ error: error.message });
-    }   
+    }  
 }
 
 async function updateCompanyControl(req, res){
@@ -78,13 +81,24 @@ async function updateCompanyControl(req, res){
 
 async function assignOwnerToControl(req, res){
     try {
-        const { id, owner } = req.body;
-        const existingControl = await CompanyControl.findById(id);
-        if (!existingControl) {
-            return res.status(404).json({ error: 'CompanyControl not found' });
+        const { controlId, ownerId, userId } = req.body;
+
+        if (!controlId || !ownerId || !userId) {
+            return res.status(400).json({ error: 'controlId, ownerId, and userId are required' });
         }
-        existingControl.owner = owner;
+
+        const existingControl = await CompanyControl.findOne({
+            user: userId,
+            'controlTemplate._id': controlId
+        });
+
+        if (!existingControl) {
+            return res.status(404).json({ error: 'Matching CompanyControl not found' });
+        }
+
+        existingControl.owner = ownerId;
         const updatedControl = await existingControl.save();
+
         res.status(200).json(updatedControl);
     } catch (error) {
         res.status(400).json({ error: error.message });

@@ -2,17 +2,62 @@ const mongoose = require('mongoose');
 
 const evidenceSchema = new mongoose.Schema(
     {
-        // type: { type: String, enum: ['document', 'screenshot', 'log', 'note'], required: true },
-        description: String,
-        fileUrl: String, 
-        uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        control: { type: mongoose.Schema.Types.ObjectId, ref: 'Control' },
+        name: {
+            type: String,
+            required: true,
+        },
+
+        description: {
+            type: String,
+        },
+
+        implementationGuidance: {
+            type: String,
+        },
+        
+        owner: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+
+        source: {
+            type: String,
+            required: true,
+        },
+        
+        creationDate: {
+            type: Date,
+            required: true,
+        },
+
+        renewal: {
+            frequency: {
+                type: String,
+                enum: ['Monthly', 'Quarterly', 'Biannually', 'Annually', 'Custom'],
+            },
+            nextRenewalDate: {
+                type: Date,
+            },
+        },
+
+        linkedControls: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Control',
+            },
+        ],
+
+        fileUrl: {
+            type: String,
+        },
+
         status: {
             type: String,
             enum: ['Uploaded', 'Under Review', 'Approved', 'Rejected'],
-            default: 'Uploaded'
-        }
-    }, 
+            default: 'Uploaded',
+        },
+    },
     { timestamps: true }
 );
 
