@@ -14,7 +14,7 @@ const evidenceSchema = new mongoose.Schema(
         implementationGuidance: {
             type: String,
         },
-        
+
         owner: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
@@ -22,23 +22,29 @@ const evidenceSchema = new mongoose.Schema(
         },
 
         source: {
-            type: String,
-            required: true,
+            type: {
+                type: String,
+                enum: ['File', 'URL'],
+                required: true,
+            },
+            value: {
+                type: String,
+                required: true,
+            },
         },
-        
+
         creationDate: {
             type: Date,
             required: true,
         },
 
-        renewal: {
-            frequency: {
-                type: String,
-                enum: ['Monthly', 'Quarterly', 'Biannually', 'Annually', 'Custom'],
-            },
-            nextRenewalDate: {
-                type: Date,
-            },
+        frequency: {
+            type: String,
+            enum: ['Monthly', 'Quarterly', 'Biannually', 'Annually', 'Custom'],
+        },
+
+        nextRenewalDate: {
+            type: Date,
         },
 
         linkedControls: [
@@ -48,14 +54,22 @@ const evidenceSchema = new mongoose.Schema(
             },
         ],
 
-        fileUrl: {
-            type: String,
-        },
-
         status: {
             type: String,
             enum: ['Uploaded', 'Under Review', 'Approved', 'Rejected'],
             default: 'Uploaded',
+        },
+
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+
+        company: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Company',
+            required: true,
         },
     },
     { timestamps: true }

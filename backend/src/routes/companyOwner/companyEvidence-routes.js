@@ -8,7 +8,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // Accept any file with key 'file'
 router.post("/uploadFile", upload.single("file"), fileController.uploadFile);
-router.post("/addEvidence", upload.single("source"), fileController.addEvidence);    
-router.get("/viewEvidence", fileController.viewEvidence);
+router.post("/addEvidence", upload.single("file"), fileController.addEvidence);    
+router.get("/viewEvidencesById/:companyId", fileController.viewEvidencesById);
 
 module.exports = router;

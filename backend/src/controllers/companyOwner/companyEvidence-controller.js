@@ -40,84 +40,105 @@ async function uploadFile(req, res) {
 
 async function addEvidence(req, res){
     try {
-        if (!req.file) {
-            return res.status(400).json({ message: 'File is required' });
-        }
-
-        // Generate unique filename
-        const ext = path.extname(req.file.originalname);
-        const filename = `${Date.now()}-${crypto.randomBytes(4).toString('hex')}${ext}`;
-
-        // Upload file to S3
-        const s3Upload = new Upload({
-            client: s3Client,
-            params: {
-                Bucket: process.env.S3_BUCKET_NAME,
-                Key: filename,
-                Body: req.file.buffer,
-                ContentType: req.file.mimetype,
-                ACL: 'public-read',
-            },
-        });
-
-        await s3Upload.done();
-
-        // Generate public file URL
-        const fileUrl = `${process.env.S3_ENDPOINT}/${process.env.S3_BUCKET_NAME}/${filename}`;
-
-        // Extract form data
         const {
             name,
             description,
             implementationGuidance,
             owner,
+            sourceType,       // 'File' or 'URL'
+            URL,              // for sourceType = 'URL'
             creationDate,
-            renewal,
+            frequency,
+            nextRenewalDate,
             linkedControls,
             status,
+            user,
+            company
         } = req.body;
 
-        // Parse nested renewal JSON if necessary
-        const parsedRenewal = renewal ? JSON.parse(renewal) : undefined;
+        let source = {};
 
-        // Create Evidence
+        // 🔄 Handle File or URL
+        if (sourceType === 'File') {
+            if (!req.file) {
+                return res.status(400).json({ message: 'File is required when sourceType is File' });
+            }
+
+            const ext = path.extname(req.file.originalname);
+            const filename = `${Date.now()}-${crypto.randomBytes(4).toString('hex')}${ext}`;
+
+            const s3Upload = new Upload({
+                client: s3Client,
+                params: {
+                    Bucket: process.env.S3_BUCKET_NAME,
+                    Key: filename,
+                    Body: req.file.buffer,
+                    ContentType: req.file.mimetype,
+                    ACL: 'public-read',
+                },
+            });
+
+            await s3Upload.done();
+
+            const fileUrl = `${process.env.S3_ENDPOINT}/${process.env.S3_BUCKET_NAME}/${filename}`;
+            source = { type: 'File', value: fileUrl };
+
+        } else if (sourceType === 'URL') {
+            if (!URL) {
+                return res.status(400).json({ message: 'URL is required when sourceType is URL' });
+            }
+
+            source = { type: 'URL', value: URL };
+        } else {
+            return res.status(400).json({ message: 'Invalid sourceType. Must be "File" or "URL".' });
+        }
+
         const newEvidence = new Evidence({
             name,
             description,
             implementationGuidance,
             owner,
-            source: req.file.originalname,
+            source,
             creationDate,
-            renewal: parsedRenewal,
+            frequency,
+            nextRenewalDate,
             linkedControls,
-            fileUrl,
             status,
+            user,
+            company,
         });
 
         const savedEvidence = await newEvidence.save();
         res.status(201).json(savedEvidence);
+
     } catch (error) {
         console.error('❌ Error adding evidence:', error);
-        res.status(500).json({ message: 'File upload failed', error: error.message });
+        res.status(500).json({ message: 'Evidence creation failed', error: error.message });
     }
+
 }
 
-async function viewEvidence(req, res){
+async function viewEvidencesById(req, res){
     try {
-        const evidences = await Evidence.find()
-            .populate('owner', 'username email') // Adjust as needed
-            .populate('linkedControls', 'name frameworkRefs') // Adjust as needed
-            .sort({ createdAt: -1 }); // Optional: newest first
+        const { companyId } = req.params; // Extract company ID from query string
+
+        const evidences = await Evidence.find({company: companyId})
+            .populate('owner', 'username email')
+            .populate('user', 'username')
+            .populate('company', 'details.fullLegalName')
+            .populate('linkedControls', 'name frameworkRefs')
+            .sort({ createdAt: -1 });
 
         res.status(200).json(evidences);
     } catch (err) {
         console.error('❌ Error fetching evidences:', err);
         res.status(500).json({ error: 'Failed to fetch evidences' });
     }
+
 }
 
 module.exports = {
     uploadFile: uploadFile,
     addEvidence: addEvidence,
-    viewEvidence: viewEvidence
+    viewEvidencesById: viewEvidencesById
 }
