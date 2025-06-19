@@ -40,7 +40,6 @@ const evidenceSchema = new mongoose.Schema(
 
         frequency: {
             type: String,
-            enum: ['Monthly', 'Quarterly', 'Biannually', 'Annually', 'Custom'],
         },
 
         nextRenewalDate: {
